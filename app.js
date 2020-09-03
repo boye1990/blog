@@ -21,6 +21,10 @@
  const handleUserRouter = require('./src/router/user')
 
  const serverHandle = (req, res) => {
+    // 去除请求的path
+    const url = req.url
+    req.path = url.split('?')[0]
+
     // 设置返回头 返回数据类型
     res.setHeader('content-type', 'application/json')
 
