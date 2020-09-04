@@ -13,7 +13,7 @@ const handleBlogRouter = (req, res) => {
         const keyword = req.query.keyword || ''
 
         if(!author || !keyword) {
-            return ErrorModel('参数有误，请求失败')
+            return new ErrorModel('参数有误，请求失败')
         } else {
             const listData = getList(author, keyword)
             return new SuccessModel(listData, '成功')
