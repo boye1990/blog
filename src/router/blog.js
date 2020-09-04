@@ -1,6 +1,6 @@
 // 引入处理接口逻辑的函数
 
-const { getList } = require('../controller/blog')
+const { getList, getDetail } = require('../controller/blog')
 
 const { SuccessModel, ErrorModel } = require('../model/resModel')
 
@@ -22,6 +22,14 @@ const handleBlogRouter = (req, res) => {
 
     // 获取博客详情
     if(method === 'GET' && req.path === '/api/blog/detail') {
+        const id = req.query.id || ''
+
+        if (!id) {
+            return new ErrorModel('id不能为空')
+        } else {
+            const detailData = getDetail(id)
+            return new SuccessModel(detailData, '请求成功')
+        }
         return {
             msg: '这是获取博客详情的接口'
         }

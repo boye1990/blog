@@ -23,6 +23,20 @@ const getList = (author, keyword) => {
     ]
 }
 
+/**
+ * @param id 详情id
+ */
+const getDetail = (id) => {
+    return {
+        id: 1,
+        title: '',
+        content: '',
+        createTime: 12345,
+        author: 'zhangsan'
+    }
+}
+
 module.exports = {
-    getList
+    getList,
+    getDetail
 }
