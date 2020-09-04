@@ -1,10 +1,22 @@
+// 引入处理接口逻辑的函数
+
+const { getList } = require('../controller/blog')
+
+const { SuccessModel, ErrorModel } = require('../model/resModel')
+
 const handleBlogRouter = (req, res) => {
     const method = req.method
 
     // 获取博客列表
     if(method === 'GET' && req.path === '/api/blog/list') {
-        return {
-            msg: '这是获取博客列表的接口'
+        const author = req.query.author || ''
+        const keyword = req.query.keyword || ''
+
+        if(!author || !keyword) {
+            return ErrorModel('参数有误，请求失败')
+        } else {
+            const listData = getList(author, keyword)
+            return new SuccessModel(listData, '成功')
         }
     }
 

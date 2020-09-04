@@ -16,7 +16,7 @@
 
  // 引入博客路由
  const handleBlogRouter = require('./src/router/blog')
-
+ const querystring = require('querystring')
  // 引入用户路由
  const handleUserRouter = require('./src/router/user')
 
@@ -24,6 +24,9 @@
     // 去除请求的path
     const url = req.url
     req.path = url.split('?')[0]
+
+    // 解析query
+    req.query = querystring.parse(url.split('?')[1])
 
     // 设置返回头 返回数据类型
     res.setHeader('content-type', 'application/json')
