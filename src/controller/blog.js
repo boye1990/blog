@@ -38,7 +38,40 @@ const getDetail = (id) => {
     }
 }
 
+/**
+ * 
+ * @param {String} content 博客内容
+ * @param {String} title 博客标题
+ * 新建博客接口
+ */
+const newBlog = (content, title) => {
+    return true
+}
+
+/**
+ * 
+ * @param {String} id 需要修改的博客id
+ * @param {String} content 修改的内容
+ * @param {String} title 标题修改的内容
+ * 更新博客
+ */
+const update = (id,content, title) => {
+    return true
+}
+
+/**
+ * 
+ * @param {String} id 要删除的博客id
+ * 删除博客 
+ */
+const deletBlog = (id) => {
+    return true
+}
+
 module.exports = {
     getList,
-    getDetail
+    getDetail,
+    newBlog,
+    update,
+    deletBlog
 }
