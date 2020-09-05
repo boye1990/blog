@@ -1,6 +1,7 @@
 /**
- * @param author 作者
- * @param keyword id
+ * 
+ * @param {String} author 作者
+ * @param {String} keyword id
  * 处理博客列表的请求逻辑，并返回数据
  */
 const getList = (author, keyword) => {
@@ -24,7 +25,8 @@ const getList = (author, keyword) => {
 }
 
 /**
- * @param id 详情id
+ * 
+ * @param {String} id 详情id
  */
 const getDetail = (id) => {
     return {

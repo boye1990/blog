@@ -30,9 +30,6 @@ const handleBlogRouter = (req, res) => {
             const detailData = getDetail(id)
             return new SuccessModel(detailData, '请求成功')
         }
-        return {
-            msg: '这是获取博客详情的接口'
-        }
     }
 
     // 新增一篇博客

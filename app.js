@@ -20,6 +20,49 @@
  // 引入用户路由
  const handleUserRouter = require('./src/router/user')
 
+ /**
+  * 
+  * @param {Object} req 请求体
+  * 因为post请求获取请求参数的过程是数据流的形式获取，是一个异步过程，需要使用promise特殊处理
+  */
+ const getPostData = (req) => {
+    const promise = new Promise((resolve, reject) => {
+        // 如果请求方法不是post 就返回一个空对象
+        if(req.method !== 'POST') {
+            resolve({})
+            return
+        }
+        // 如果他的请求头不是json格式，就返回一个空对象
+        if(req.headers['content-type'] !== 'application/json') {
+            resolve({})
+            return
+        }
+
+        // 不是以上2种情况就开始异步处理post请求的参数
+        let postData = ''
+        req.on('data', chunk => {
+            postData += chunk.toString() // chunk是一个2进制数据，要转化成字符串
+        })
+        req.on('end', () => {
+            if(!postData) {
+                resolve({})
+                return
+            }
+            resolve(
+                JSON.parse(postData)
+            )
+        })
+
+    }) 
+    return promise
+ }
+
+ /**
+  * 
+  * @param {Object} req 请求数据
+  * @param {Object} res 返回数据
+  */
+
  const serverHandle = (req, res) => {
     // 去除请求的path
     const url = req.url
@@ -31,32 +74,38 @@
     // 设置返回头 返回数据类型
     res.setHeader('content-type', 'application/json')
 
-    // 处理blog路由（接口）
-    const blogData = handleBlogRouter(req, res)
+    // 处理路由接口之前，要通过getPostData函数把请求参数处理完
+    getPostData(req).then(postData => {
+        // 我们在这里就能获取到完整的postData，将它放在req中，在后续处理路由的时候就都能拿到postdata了
+        req.body = postData
 
-    if(blogData) {
-        res.end(
-            JSON.stringify(blogData)
-        )
-        return
-    }
+        // 处理blog路由（接口）
+        const blogData = handleBlogRouter(req, res)
 
-    // 处理user路由（接口）
-    const userData = handleUserRouter(req, res)
-    if(userData) {
-        res.end(
-            JSON.stringify(userData)
-        )
-        return
-    }
+        if(blogData) {
+            res.end(
+                JSON.stringify(blogData)
+            )
+            return
+        }
 
-     // 如果未匹配以上任何路由（接口） 返回404
+        // 处理user路由（接口）
+        const userData = handleUserRouter(req, res)
+        if(userData) {
+            res.end(
+                JSON.stringify(userData)
+            )
+            return
+        }
 
-     // 重写返回头 文件类型改为纯文本类型
-     res.writeHead(404, {"content-type": "text/plain"})
-     // 写上返回内容
-     res.write("404 Not Found\n")
-     res.end()
+         // 如果未匹配以上任何路由（接口） 返回404
+
+         // 重写返回头 文件类型改为纯文本类型
+         res.writeHead(404, {"content-type": "text/plain"})
+         // 写上返回内容
+         res.write("404 Not Found\n")
+         res.end()
+        })
  }
 
  module.exports = serverHandle
