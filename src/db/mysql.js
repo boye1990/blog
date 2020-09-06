@@ -17,7 +17,7 @@ con.connect()
 
 function exec(sql) {
     // 因为这是一个异步所以使用promise
-
+    console.log(sql)
     const promise = new Promise((resolve, reject) => {
         con.query(sql, (err, result) => {
             if(err) {

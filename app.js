@@ -78,14 +78,16 @@
     getPostData(req).then(postData => {
         // 我们在这里就能获取到完整的postData，将它放在req中，在后续处理路由的时候就都能拿到postdata了
         req.body = postData
-
         // 处理blog路由（接口）
-        const blogData = handleBlogRouter(req, res)
-
-        if(blogData) {
-            res.end(
-                JSON.stringify(blogData)
-            )
+        const blogresult = handleBlogRouter(req, res)
+        
+        if(blogresult) {
+            blogresult.then(blogData => {
+                console.log(blogData, 'app.js')
+                res.end(
+                    JSON.stringify(blogData)
+                )
+            })
             return
         }
 

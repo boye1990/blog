@@ -11,13 +11,13 @@ const handleBlogRouter = (req, res) => {
     if(method === 'GET' && req.path === '/api/blog/list') {
         const author = req.query.author || ''
         const keyword = req.query.keyword || ''
-
-        if(!author || !keyword) {
-            return new ErrorModel('参数有误，请求失败')
-        } else {
-            const listData = getList(author, keyword)
-            return new SuccessModel(listData, '成功')
-        }
+        const result = getList(author, keyword)
+        return result.then(res => {
+            console.log(res)
+            return new SuccessModel(res, '成功')
+        }).catch((err) => {
+            console.log(err)
+        })
     }
 
     // 获取博客详情
@@ -74,9 +74,6 @@ const handleBlogRouter = (req, res) => {
             } else {
                 return new SuccessModel('该id不存在')
             }
-        }
-        return {
-            msg: '这是删除一篇博客的接口'
         }
     }
 }
