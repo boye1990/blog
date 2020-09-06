@@ -79,6 +79,15 @@
         // 我们在这里就能获取到完整的postData，将它放在req中，在后续处理路由的时候就都能拿到postdata了
         req.body = postData
         // 处理blog路由（接口）
+
+        /**
+         * node 对接 mysql数据库 流程
+         * router 模块 - controller 模块 - db 模块
+         * handleBlogRouter -> getList -> exec
+         * 返回的都是 promise
+         * exec -> getList -> handleBlogRouter
+         */
+        // 这里接收到的也是一个promise
         const blogresult = handleBlogRouter(req, res)
         
         if(blogresult) {

@@ -15,6 +15,7 @@ const getList = (author, keyword) => {
         sql += `and title like '%${keyword}%' `
     }
     sql += `order by createTime desc;`
+    // 返回的是一个promise
     return exec(sql)
  }
 

@@ -11,7 +11,11 @@ const handleBlogRouter = (req, res) => {
     if(method === 'GET' && req.path === '/api/blog/list') {
         const author = req.query.author || ''
         const keyword = req.query.keyword || ''
+
+        // 这里接收的也是promise
         const result = getList(author, keyword)
+
+        // 把promise的结果返回到 app.js 调用handleBlogRouter的地方，这里返回的也是promise
         return result.then(res => {
             console.log(res)
             return new SuccessModel(res, '成功')
