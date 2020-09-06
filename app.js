@@ -64,15 +64,36 @@
   */
 
  const serverHandle = (req, res) => {
+
     // 去除请求的path
     const url = req.url
     req.path = url.split('?')[0]
+    
+    // 设置返回头 返回数据类型
+    res.setHeader('content-type', 'application/json')
 
     // 解析query
     req.query = querystring.parse(url.split('?')[1])
 
-    // 设置返回头 返回数据类型
-    res.setHeader('content-type', 'application/json')
+    // 解析 cookie node获取cookie
+    // 在登录的接口，登录成功够会设置cookie的值，存储用户名，并且设置了 httpOnly,限制浏览器修改。
+    // 在这里我们先解析 cookie， 并把它单独放在请求体中，在需要登录的接口，可以通过req.cookie 来判断，当前是否登录。
+    req.cookie = {}
+    const cookiestr = req.headers.cookie || '' // k1=v1;k2=v2的格式
+    if(cookiestr) {
+        cookiestr.split(';').forEach(item => {
+            if(!item) {
+                return
+            }
+            const arr = item.split('=')
+            console.log(item, 'item')
+            const key = arr[0].trim()
+            const val = arr[1].trim()
+            // 通过循环的方式，获取cookie的值，如果出现相同key的情况，我们取到最后一个值就能将前面的val 覆盖。这样就达到了限制浏览器他修改cookie的目的。因为他修改的cookie，始终在我们server端设置的cookie的前面。永远会被覆盖。
+            console.log(key, val, '----')
+            req.cookie[key] = val
+        })
+    }
 
     // 处理路由接口之前，要通过getPostData函数把请求参数处理完
     getPostData(req).then(postData => {

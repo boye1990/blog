@@ -16,6 +16,7 @@ use myBlog; -- 使用myBlog数据库
 
 -- update users set realname='李四2' where username = 'lisi'; --  更新将 username 为 lisi 的数据中的 realname 改成 李四2
 
+-- update blogs set content='爽肤水地方', title='水电费水电费' where id='5'; -- 修改多个字段，用逗号隔开
 
 -- delete from users where username='lisi'; -- 删除用户名为lisi的数据
 

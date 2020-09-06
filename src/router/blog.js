@@ -44,7 +44,6 @@ const handleBlogRouter = (req, res) => {
     if(method === "POST" && req.path === '/api/blog/new') {
         // 因为是post请求，我们在getPostData方法中以及将参数存在在req.body中，在这通过解构赋值出需要的参数
         const { title, content } = req.body
-
         if(!title || !content) {
             const promise = new Promise((resolve, reject) => {
                 resolve(new ErrorModel('标题和内容不能为空'))
@@ -58,6 +57,8 @@ const handleBlogRouter = (req, res) => {
                 return new ErrorModel( err, '新建失败')
             })
         }
+
+
     }
 
     // 更新一篇博客
