@@ -16,9 +16,8 @@ const handleBlogRouter = (req, res) => {
         const result = getList(author, keyword)
 
         // 把promise的结果返回到 app.js 调用handleBlogRouter的地方，这里返回的也是promise
-        return result.then(res => {
-            console.log(res)
-            return new SuccessModel(res, '成功')
+        return result.then(listData => {
+            return new SuccessModel(listData, '成功')
         }).catch((err) => {
             console.log(err)
         })
@@ -27,13 +26,18 @@ const handleBlogRouter = (req, res) => {
     // 获取博客详情
     if(method === 'GET' && req.path === '/api/blog/detail') {
         const id = req.query.id || ''
-
-        if (!id) {
-            return new ErrorModel('id不能为空')
-        } else {
-            const detailData = getDetail(id)
-            return new SuccessModel(detailData, '请求成功')
+        if(!id) {
+            const promise = new Promise((resolve, reject) => {
+                resolve(new ErrorModel('id不能为空'))
+            })
+            return promise
         }
+        const result = getDetail(id)
+        return result.then(detailData => {
+            return new SuccessModel(detailData, '成功')
+        }).catch(err => {
+            return new ErrorModel(err, 'id不存在')
+        })
     }
 
     // 新增一篇博客
@@ -42,11 +46,17 @@ const handleBlogRouter = (req, res) => {
         const { title, content } = req.body
 
         if(!title || !content) {
-            return new ErrorModel('标题和内容不能为空')
+            const promise = new Promise((resolve, reject) => {
+                resolve(new ErrorModel('标题和内容不能为空'))
+            })
+            return promise
         } else {
-            if(newBlog(title, content)) {
-                return new SuccessModel('新建成功')
-            }
+            const result = newBlog(title, content)
+            return result.then(newData => {
+                return new SuccessModel( newData, '新建成功')
+            }).catch(err => {
+                return new ErrorModel( err, '新建失败')
+            })
         }
     }
 
@@ -55,15 +65,22 @@ const handleBlogRouter = (req, res) => {
         const { id, content, title } = req.body
 
         if(!id) {
-            return new ErrorModel('博客id不能为空')
+            const promise = new Promise((resolve, reject) => {
+                resolve(new ErrorModel('id不能为空'))
+            })
+            return promise
         } else if(!content && !title) {
-            return new ErrorModel('内容和详情必须有一样存在')
+            const promise = new Promise((resolve, reject) => {
+                resolve(new ErrorModel('内容和详情必须有一样存在'))
+            })
+            return promise
         } else {
-            if(update(id, content, title)) {
-                return new SuccessModel('更新成功')
-            } else {
-                return new SuccessModel('该id不存在')
-            }
+            const result = update(id, content, title)
+            return result.then(updateDate => {
+                return new SuccessModel(updateDate, '更新成功')
+            }).catch (err => {
+                return new ErrorModel(err, '该id不存在')
+            })
         }
     }
 
@@ -71,13 +88,17 @@ const handleBlogRouter = (req, res) => {
     if(method === "POST" && req.path === '/api/blog/delete') {
         const {id} = req.body
         if(!id) {
-            return new ErrorModel('id不能为空')
+            const promise = new Promise((resolve, reject) => {
+                resolve(new ErrorModel('id不能为空'))
+            })
+            return promise
         } else {
-            if(deletBlog(id)) {
-                return new SuccessModel('删除成功')
-            } else {
-                return new SuccessModel('该id不存在')
-            }
+            const result = deletBlog(id)
+            return result.then(deletBlogData => {
+                return new SuccessModel(deletBlogData, '删除成功')
+            }).catch (err => {
+                return new ErrorModel(err, '该id不存在')
+            })
         }
     }
 }

@@ -24,13 +24,8 @@ const getList = (author, keyword) => {
  * @param {String} id 详情id
  */
 const getDetail = (id) => {
-    return {
-        id: 1,
-        title: '',
-        content: '',
-        createTime: 12345,
-        author: 'zhangsan'
-    }
+    let sql =  `select * from blogs where id='${id}';`
+    return exec(sql)
 }
 
 /**
@@ -40,7 +35,8 @@ const getDetail = (id) => {
  * 新建博客接口
  */
 const newBlog = (content, title) => {
-    return true
+    const sql = `insert into blogs (title, content, createtime, author) values ('${content}', '${title}', ${new Date().getTime()}, '佚名')`
+    return exec(sql)
 }
 
 /**
@@ -50,8 +46,16 @@ const newBlog = (content, title) => {
  * @param {String} title 标题修改的内容
  * 更新博客
  */
-const update = (id,content, title) => {
-    return true
+const update = (id, content, title) => {
+    let sql
+    if(content && title) {
+        sql = `update blogs set content='${content}' title='${title}' where id='${id}';`
+    } else if(content && !title) {
+        sql = `update blogs set content='${content}' where id='${id}';`
+    } else {
+        sql = `update blogs set title='${title}' where id='${id}';`
+    }
+    return exec(sql)
 }
 
 /**
@@ -60,7 +64,8 @@ const update = (id,content, title) => {
  * 删除博客 
  */
 const deletBlog = (id) => {
-    return true
+    const sql = `delete from blogs where id = '${id}';`
+    return exec(sql)
 }
 
 module.exports = {

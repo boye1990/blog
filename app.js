@@ -92,7 +92,6 @@
         
         if(blogresult) {
             blogresult.then(blogData => {
-                console.log(blogData, 'app.js')
                 res.end(
                     JSON.stringify(blogData)
                 )
@@ -101,11 +100,14 @@
         }
 
         // 处理user路由（接口）
-        const userData = handleUserRouter(req, res)
-        if(userData) {
-            res.end(
-                JSON.stringify(userData)
-            )
+        const userresult = handleUserRouter(req, res)
+        console.log(userresult, 'userresult')
+        if(userresult) {
+            userresult.then(userData => {
+                res.end(
+                    JSON.stringify(userData)
+                )
+            })
             return
         }
 
