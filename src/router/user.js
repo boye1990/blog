@@ -13,7 +13,6 @@ const handleUserRouter = (req, res) => {
         } else {
             const result = login(userName, password)
             return result.then(loginData => {
-                console.log(loginData, '-------')
                 if(loginData.length) {
                     return new SuccessModel(loginData, '登录成功')
                 } else {

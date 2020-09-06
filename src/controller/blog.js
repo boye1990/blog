@@ -49,11 +49,11 @@ const newBlog = (content, title) => {
 const update = (id, content, title) => {
     let sql
     if(content && title) {
-        sql = `update blogs set content='${content}' title='${title}' where id='${id}';`
+        sql = `update blogs set content='${content}', title='${title}' where id='${id}';`
     } else if(content && !title) {
-        sql = `update blogs set content='${content}' where id='${id}';`
+        sql = `update blogs set content='${content}' where id=${id};`
     } else {
-        sql = `update blogs set title='${title}' where id='${id}';`
+        sql = `update blogs set title='${title}' where id=${id};`
     }
     return exec(sql)
 }

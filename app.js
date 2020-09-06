@@ -101,7 +101,6 @@
 
         // 处理user路由（接口）
         const userresult = handleUserRouter(req, res)
-        console.log(userresult, 'userresult')
         if(userresult) {
             userresult.then(userData => {
                 res.end(
