@@ -1,17 +1,6 @@
 const { login } = require('../controller/user')
 const { SuccessModel, ErrorModel } = require('../model/resModel')
 
-/**
- * 设置cookie的过期时间
- */
-const getCookieExpires = () => {
-    // 获取当前时间
-    const d = new Date()
-    // 重新设置时间，往后加一天，相当于明天这个时候过期
-    d.setTime(d.getTime() + (24 * 60 * 60 * 1000))
-    // 转换成cookie专用格式
-    return d.toGMTString()
-} 
 const handleUserRouter = (req, res) => {
     const method = req.method
     // 登录接口
@@ -33,7 +22,11 @@ const handleUserRouter = (req, res) => {
                     // httpOnly ： 可以限制浏览器通过js修改cookie。他可以加上其他cookie，但是不会覆盖这次设置的登录信息cookie，浏览器设置的cookie，始终在这里设置的cookie的前面
                     // 在app.js中解析cookie的时候，我们取的是最后一个cookie的值，因此可以达到限制浏览器修改cookie的值的效果
                     // getCookieExpires返回设置的过期时间
-                    res.setHeader('set-cookie', `userName=${userName}; path=/; httpOnly; Expires=${getCookieExpires()}`)
+                    // res.setHeader('set-cookie', `userName=${userName}; path=/; httpOnly; Expires=${getCookieExpires()}`)
+                    
+                    // 登录成功
+                    req.session.userName = userName
+                    req.session.password = password
                     return new SuccessModel(loginData, '登录成功')
                 } else {
                     console.log('123')
@@ -48,10 +41,10 @@ const handleUserRouter = (req, res) => {
     }
     if(req.method === 'GET' && req.path === '/api/user/login-test') {
         // 在这里进行一次登录校验，确定当前是否登录，如果没有登录不发送请求，提示他登录
-        const cookie = req.cookie
-        console.log(cookie.userName, 'userscookie' )
-        if(cookie && cookie.userName) {
-            return Promise.resolve(new SuccessModel(`已经登录，用户名为：${cookie.userName}`))
+        const session = req.session
+        console.log(session.userName, 'userscookie' )
+        if(session && session.userName) {
+            return Promise.resolve(new SuccessModel(`已经登录，用户名为：${session.userName}，密码为：${session.password}`))
         } else {
             // 未登录，提示他登录。
             return Promise.resolve(new ErrorModel('未登录，请登录后再新增博客'))

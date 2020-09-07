@@ -20,6 +20,18 @@
  // 引入用户路由
  const handleUserRouter = require('./src/router/user')
 
+  /**
+   * 设置cookie的过期时间
+   */
+  const getCookieExpires = () => {
+      // 获取当前时间
+      const d = new Date()
+      // 重新设置时间，往后加一天，相当于明天这个时候过期
+      d.setTime(d.getTime() + (24 * 60 * 60 * 1000))
+      // 转换成cookie专用格式
+      return d.toGMTString()
+  } 
+
  /**
   * 
   * @param {Object} req 请求体
@@ -63,6 +75,8 @@
   * @param {Object} res 返回数据
   */
 
+ let SESSION_DATA = {} // 设置session数据存放变量
+
  const serverHandle = (req, res) => {
 
     // 去除请求的path
@@ -95,6 +109,25 @@
         })
     }
 
+    // 解析 session
+    let needSession = false // 判断是否需要设置session
+    let userId = req.cookie.userId // 检查请求体的cookie是否携带userId
+
+    if(userId) { // 如果携带了
+        if(!SESSION_DATA[userId]) { // 如果 SESSION_DATA 中没有对应的 userId的key和value
+            SESSION_DATA[userId] = {} // 为SESSION_DATA添加 userId 为 key，并且赋值空对象
+        }
+    } else {
+        // 如果没有携带，就生成一个随机不重复的 userid ，并且将needSession设置为true
+        needSession = true
+        userId = `${Date.now()}_${Math.random()}`
+        // 并为SESSION_DATA添加 userId 为 key，并且赋值空对象
+        SESSION_DATA[userId] = {}
+    }
+    // 将 SESSION_DATA[userId] 赋值给 请求体 存在 session字段中。
+    req.session = SESSION_DATA[userId]
+
+
     // 处理路由接口之前，要通过getPostData函数把请求参数处理完
     getPostData(req).then(postData => {
         // 我们在这里就能获取到完整的postData，将它放在req中，在后续处理路由的时候就都能拿到postdata了
@@ -113,6 +146,10 @@
         
         if(blogresult) {
             blogresult.then(blogData => {
+                // 如果需要设置session，就在返回之前设置userId。为上面session解析时生成的userId
+                if(needSession) {
+                    res.setHeader('set-cookie', `userId=${userId}; path=/; httpOnly; Expires=${getCookieExpires()}`)
+                }
                 res.end(
                     JSON.stringify(blogData)
                 )
@@ -124,6 +161,10 @@
         const userresult = handleUserRouter(req, res)
         if(userresult) {
             userresult.then(userData => {
+                // 如果需要设置session，就在返回之前设置userId。为上面session解析时生成的userId
+                if(needSession) {
+                    res.setHeader('set-cookie', `userId=${userId}; path=/; httpOnly; Expires=${getCookieExpires()}`)
+                }
                 res.end(
                     JSON.stringify(userData)
                 )
