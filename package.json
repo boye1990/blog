@@ -11,6 +11,10 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "dependencies": {
+    "mysql": "^2.18.1",
+    "redis": "^3.0.2"
+  },
   "devDependencies": {
     "cross-env": "^7.0.2",
     "nodemon": "^2.0.4"

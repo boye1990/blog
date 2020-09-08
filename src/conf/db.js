@@ -19,6 +19,10 @@
         password: 'zbh123456', // 密码
         port: '3306', // 端口号
         database: 'myblog' // 要操作的数据库
+    },
+    REDIS_CONF = {
+       host: '127.0.0.1',
+       port: 6379
     }
  }
 
@@ -30,10 +34,15 @@
         password: 'zbh123456', // 密码
         port: '3306', // 端口号
         database: 'myblog' // 要操作的数据库
+    },
+    REDIS_CONF = {
+       host: '127.0.0.1',
+       port: 6379
     }
 
  }
 
  module.exports = {
-    MYSQL_CONF
+    MYSQL_CONF,
+    REDIS_CONF
  }
