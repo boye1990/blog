@@ -4,11 +4,8 @@ const { SuccessModel, ErrorModel } = require('../model/resModel')
 const handleUserRouter = (req, res) => {
     const method = req.method
     // 登录接口
-    // if(method === 'POST' && req.path === '/api/user/login') { 测试cookie暂时使用get请求
-    if(method === 'GET' && req.path === '/api/user/login') {
-        // const { userName, password } = req.body
-        const userName = req.query.userName || ''
-        const password = req.query.password  || ''
+    if(method === 'POST' && req.path === '/api/user/login') { 
+        const { userName, password } = req.body
         if(!userName || !password) {
             const promise = new Promise((resolve, reject) => {
                 resolve(new ErrorModel('用户名，密码不能为空'))
@@ -37,17 +34,6 @@ const handleUserRouter = (req, res) => {
                 console.log(err)
                 return new ErrorModel(err, '用户名或者密码错误')
             })
-        }
-    }
-    if(req.method === 'GET' && req.path === '/api/user/login-test') {
-        // 在这里进行一次登录校验，确定当前是否登录，如果没有登录不发送请求，提示他登录
-        const session = req.session
-        // console.log(session.userName, 'userscookie' )
-        if(session && session.userName) {
-            return Promise.resolve(new SuccessModel(`已经登录，用户名为：${session.userName}，密码为：${session.password}`))
-        } else {
-            // 未登录，提示他登录。
-            return Promise.resolve(new ErrorModel('未登录，请登录后再新增博客'))
         }
     }
 }

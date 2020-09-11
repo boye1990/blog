@@ -4,6 +4,19 @@ const { getList, getDetail, newBlog, update, deletBlog } = require('../controlle
 
 const { SuccessModel, ErrorModel } = require('../model/resModel')
 
+// 登录验证的函数
+const loginCheck = (req) => {
+    // 在这里进行一次登录校验，确定当前是否登录，如果没有登录不发送请求，提示他登录
+    const session = req.session
+    // console.log(session.userName, 'userscookie' )
+    if(session && session.userName) {
+        return false
+    } else {
+        // 未登录，提示他登录。
+        return Promise.resolve(new ErrorModel('未登录，请登录后再新增博客'))
+    }
+}
+
 const handleBlogRouter = (req, res) => {
     const method = req.method
 
@@ -42,6 +55,11 @@ const handleBlogRouter = (req, res) => {
 
     // 新增一篇博客
     if(method === "POST" && req.path === '/api/blog/new') {
+        let loginState = loginCheck()
+        if(loginState){
+            return loginState
+        }
+
         // 因为是post请求，我们在getPostData方法中以及将参数存在在req.body中，在这通过解构赋值出需要的参数
         const { title, content } = req.body
         if(!title || !content) {
@@ -63,6 +81,11 @@ const handleBlogRouter = (req, res) => {
 
     // 更新一篇博客
     if(method === "POST" && req.path === '/api/blog/update') {
+
+        let loginState = loginCheck()
+        if(loginState){
+            return loginState
+        }
         const { id, content, title } = req.body
 
         if(!id) {
@@ -87,6 +110,10 @@ const handleBlogRouter = (req, res) => {
 
     // 删除一篇博客
     if(method === "POST" && req.path === '/api/blog/delete') {
+        let loginState = loginCheck()
+        if(loginState){
+            return loginState
+        }
         const {id} = req.body
         if(!id) {
             const promise = new Promise((resolve, reject) => {
