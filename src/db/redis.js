@@ -17,16 +17,16 @@ function get (key) {
                 reject(err)
                 return
             }
-            if(val === null) {
+            if(result === null) {
                 resolve(null)
             }
 
             try {
                 resolve (
-                    JSON.parse(val) // 如果val是一个对象的字符串，就转化成对象
+                    JSON.parse(result) // 如果val是一个对象的字符串，就转化成对象
                 )
             } catch (ex) {
-                resolve(val)  // 如果不是就直接返回
+                resolve(result)  // 如果不是就直接返回
             }
             console.log('val', result)
         })

@@ -42,7 +42,7 @@ const handleUserRouter = (req, res) => {
     if(req.method === 'GET' && req.path === '/api/user/login-test') {
         // 在这里进行一次登录校验，确定当前是否登录，如果没有登录不发送请求，提示他登录
         const session = req.session
-        console.log(session.userName, 'userscookie' )
+        // console.log(session.userName, 'userscookie' )
         if(session && session.userName) {
             return Promise.resolve(new SuccessModel(`已经登录，用户名为：${session.userName}，密码为：${session.password}`))
         } else {
