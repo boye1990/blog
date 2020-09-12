@@ -19,6 +19,7 @@
  const querystring = require('querystring')
  // 引入用户路由
  const handleUserRouter = require('./src/router/user')
+ const { get, set } = require('./src/db/redis')
 
   /**
    * 设置cookie的过期时间
@@ -75,7 +76,7 @@
   * @param {Object} res 返回数据
   */
 
- let SESSION_DATA = {} // 设置session数据存放变量
+//  let SESSION_DATA = {} // 设置session数据存放变量
 
  const serverHandle = (req, res) => {
 
@@ -109,27 +110,52 @@
         })
     }
 
-    // 解析 session
-    let needSession = false // 判断是否需要设置session
-    let userId = req.cookie.userId // 检查请求体的cookie是否携带userId
+    // // 解析 session
+    // let needSession = false // 判断是否需要设置session
+    // let userId = req.cookie.userId // 检查请求体的cookie是否携带userId
 
-    if(userId) { // 如果携带了
-        if(!SESSION_DATA[userId]) { // 如果 SESSION_DATA 中没有对应的 userId的key和value
-            SESSION_DATA[userId] = {} // 为SESSION_DATA添加 userId 为 key，并且赋值空对象
-        }
-    } else {
-        // 如果没有携带，就生成一个随机不重复的 userid ，并且将needSession设置为true
+    // if(userId) { // 如果携带了
+    //     if(!SESSION_DATA[userId]) { // 如果 SESSION_DATA 中没有对应的 userId的key和value
+    //         SESSION_DATA[userId] = {} // 为SESSION_DATA添加 userId 为 key，并且赋值空对象
+    //     }
+    // } else {
+    //     // 如果没有携带，就生成一个随机不重复的 userid ，并且将needSession设置为true
+    //     needSession = true
+    //     userId = `${Date.now()}_${Math.random()}`
+    //     // 并为SESSION_DATA添加 userId 为 key，并且赋值空对象
+    //     SESSION_DATA[userId] = {}
+    // }
+    // // 将 SESSION_DATA[userId] 赋值给 请求体 存在 session字段中。
+    // req.session = SESSION_DATA[userId]
+
+    // 解析 session (使用 redis)
+    let needSession = false
+    let userId = req.cookie.userId
+
+    if(!userId) {
         needSession = true
         userId = `${Date.now()}_${Math.random()}`
-        // 并为SESSION_DATA添加 userId 为 key，并且赋值空对象
-        SESSION_DATA[userId] = {}
+        // 初始化 redis 中的 session 值
+
+        set(userId, {})
     }
-    // 将 SESSION_DATA[userId] 赋值给 请求体 存在 session字段中。
-    req.session = SESSION_DATA[userId]
+    // 获取 session
+    req.sessionId = userId
 
-
-    // 处理路由接口之前，要通过getPostData函数把请求参数处理完
-    getPostData(req).then(postData => {
+    get(req.sessionId).then(sessionData => {
+        if(sessionData === null) {
+            // 初始化 redis 中的 session 值
+            set(req.sessionId, {})
+            // 设置 session
+            req.session = {}
+        } else {
+            // 设置 session
+            req.session = sessionData
+        }
+        // 处理 post data
+        return getPostData(req)
+    })
+    .then(postData => { // 处理路由接口之前，要通过getPostData函数把请求参数处理完
         // 我们在这里就能获取到完整的postData，将它放在req中，在后续处理路由的时候就都能拿到postdata了
         req.body = postData
         // 处理blog路由（接口）
