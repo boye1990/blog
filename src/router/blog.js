@@ -9,7 +9,7 @@ const loginCheck = (req) => {
     // 在这里进行一次登录校验，确定当前是否登录，如果没有登录不发送请求，提示他登录
     const session = req.session
     // console.log(session.userName, 'userscookie' )
-    if(session && session.userName) {
+    if(session && session.username) {
         return false
     } else {
         // 未登录，提示他登录。
@@ -47,7 +47,7 @@ const handleBlogRouter = (req, res) => {
         }
         const result = getDetail(id)
         return result.then(detailData => {
-            return new SuccessModel(detailData, '成功')
+            return new SuccessModel(detailData[0], '成功')
         }).catch(err => {
             return new ErrorModel(err, 'id不存在')
         })
@@ -55,7 +55,7 @@ const handleBlogRouter = (req, res) => {
 
     // 新增一篇博客
     if(method === "POST" && req.path === '/api/blog/new') {
-        let loginState = loginCheck()
+        let loginState = loginCheck(req)
         if(loginState){
             return loginState
         }
@@ -82,11 +82,12 @@ const handleBlogRouter = (req, res) => {
     // 更新一篇博客
     if(method === "POST" && req.path === '/api/blog/update') {
 
-        let loginState = loginCheck()
+        let loginState = loginCheck(req)
         if(loginState){
             return loginState
         }
-        const { id, content, title } = req.body
+        const { id } = req.query
+        const { content, title } = req.body
 
         if(!id) {
             const promise = new Promise((resolve, reject) => {
@@ -109,12 +110,12 @@ const handleBlogRouter = (req, res) => {
     }
 
     // 删除一篇博客
-    if(method === "POST" && req.path === '/api/blog/delete') {
-        let loginState = loginCheck()
+    if(method === "POST" && req.path === '/api/blog/del') {
+        let loginState = loginCheck(req)
         if(loginState){
             return loginState
         }
-        const {id} = req.body
+        const {id} = req.query
         if(!id) {
             const promise = new Promise((resolve, reject) => {
                 resolve(new ErrorModel('id不能为空'))

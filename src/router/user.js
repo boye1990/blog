@@ -6,14 +6,14 @@ const handleUserRouter = (req, res) => {
     const method = req.method
     // 登录接口
     if(method === 'POST' && req.path === '/api/user/login') { 
-        const { userName, password } = req.body
-        if(!userName || !password) {
+        const { username, password } = req.body
+        if(!username || !password) {
             const promise = new Promise((resolve, reject) => {
                 resolve(new ErrorModel('用户名，密码不能为空'))
             })
             return promise
         } else {
-            const result = login(userName, password)
+            const result = login(username, password)
             return result.then(loginData => {
                 if(loginData.length) {
                     // 登录成功, 设置cookie。将用户的信息设置在cookie里面，在需要登录的页面，获取请求头带过来的cookie，来判断是否登录。
@@ -23,7 +23,7 @@ const handleUserRouter = (req, res) => {
                     // res.setHeader('set-cookie', `userName=${userName}; path=/; httpOnly; Expires=${getCookieExpires()}`)
                     
                     // 登录成功
-                    req.session.userName = userName
+                    req.session.username = username
                     req.session.password = password
                     // 同步到 redis
                     set(req.sessionId, req.session)
